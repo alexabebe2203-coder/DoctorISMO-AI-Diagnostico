@@ -9,14 +9,24 @@ const app = express();
 const PORT = 3000;
 
 // Initialize GoogleGenAI server-side with user-agent header as indicated in SKILL
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
+let aiInstance: GoogleGenAI | null = null;
+function getAI(): GoogleGenAI {
+  if (!aiInstance) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("Clave de API GEMINI_API_KEY no encontrada en las variables de entorno. Por favor, asegúrese de agregarla a Vercel.");
     }
+    aiInstance = new GoogleGenAI({
+      apiKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        }
+      }
+    });
   }
-});
+  return aiInstance;
+}
 
 // Middleware to parse large JSON (since user could upload multiple base64 files)
 app.use(express.json({ limit: "50mb" }));
@@ -171,7 +181,7 @@ app.post("/api/doctorismo/diagnose", async (req, res) => {
     }
 
     // Call Gemini using 'gemini-3.5-flash'
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: 'gemini-3.5-flash',
       contents: parts,
       config: {
@@ -351,7 +361,7 @@ app.post("/api/doctorismo/generate-avatar", async (req, res) => {
 
     // Note that we must use gemini-3.1-flash-image-preview for high quality images as specified in gemini-api SKILL.
     // Also, gemini-3.1-flash-image-preview is a PAID model, we'll let the user know, and use gemini-3.1-flash-image-preview.
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: 'gemini-3.1-flash-image-preview',
       contents: [{ text: prompt }],
       config: {
@@ -382,6 +392,15 @@ app.post("/api/doctorismo/generate-avatar", async (req, res) => {
     console.error("Error in generate-avatar endpoint:", error);
     res.status(500).json({ error: error?.message || "Algo falló al modelar el Avatar Holográfico de IA." });
   }
+});
+
+// Global Express Error Handler Middleware to prevent unhandled rejections from returning raw HTML error pages
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error("Unhandled Global Server Error:", err);
+  res.status(500).json({
+    error: "Error interno en el servidor de soporte DoctorISMO",
+    message: err?.message || String(err)
+  });
 });
 
 // Serve frontend assets
