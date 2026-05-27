@@ -1,6 +1,5 @@
 import express from "express";
 import path from "path";
-import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 
@@ -388,6 +387,7 @@ app.post("/api/doctorismo/generate-avatar", async (req, res) => {
 // Serve frontend assets
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
@@ -406,4 +406,10 @@ async function startServer() {
   });
 }
 
-startServer();
+// Export the app instance for Serverless platform hosting (Vercel)
+export default app;
+
+// Only execute startServer if not in a Vercel serverless environment
+if (process.env.NODE_ENV !== "test" && !process.env.VERCEL) {
+  startServer();
+}
