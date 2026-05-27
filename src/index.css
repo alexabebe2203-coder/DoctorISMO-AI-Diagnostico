@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@keyframes ecg-sweep {
+  0% {
+    stroke-dashoffset: 2000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-ecg-sweep {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: ecg-sweep 12s linear infinite;
+}
+
+@keyframes scan-line-sweep {
+  0% {
+    top: 0%;
+  }
+  50% {
+    top: 100%;
+  }
+  100% {
+    top: 0%;
+  }
+}
+
+.animate-scan-line {
+  animation: scan-line-sweep 4s ease-in-out infinite;
+}
+
+@media print {
+  /* Hide all non-printable wrappers and interactive elements */
+  header,
+  footer,
+  #main-footer,
+  #left-column,
+  #btn-sistemas-ismo,
+  #biometric-id-badge-container,
+  #error-banner,
+  #report-view-card,
+  #print-action-banner,
+  #hologram-stand-wrapper,
+  #right-monitor-widgets,
+  .print\:hidden,
+  button,
+  nav {
+    display: none !important;
+  }
+
+  /* Reset main layouts to fit fully on the page width */
+  body, html, #root {
+    background: white !important;
+    color: #0f172a !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  #workspace-grid {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #right-column {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Make sure the target official navy sheet stays visible and formats correctly */
+  #official-navy-pdf-document {
+    display: block !important;
+    visibility: visible !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: white !important;
+    color: #0f172a !important;
+  }
+
+  /* Avoid unwanted page cuts in reports */
+  .print-break-avoid {
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
+  }
+}

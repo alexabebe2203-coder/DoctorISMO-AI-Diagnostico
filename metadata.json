@@ -1,0 +1,6 @@
+{
+  "name": "DoctorISMO AI",
+  "description": "Sistema de Diagnóstico Clínico de alta precisión con stand holográfico, análisis de archivos y modelado virtual de avatar del paciente.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
