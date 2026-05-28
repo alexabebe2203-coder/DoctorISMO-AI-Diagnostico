@@ -177,31 +177,65 @@ export const PatientForm: React.FC<PatientFormProps> = ({
 
   // Helper function to dynamically evaluate clinical risk levels for sliders
   const getVitalsLevel = (vital: string, val: number) => {
+    const age = patientData.age || 0;
+
     if (vital === 'heartRate') {
+      if (age <= 2) { // Lactantes y niños de hasta 2 años
+        if (val < 60 || val > 165) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
+        if (val < 80 || val > 140) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
+        return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
+      }
+      if (age <= 12) { // Niños escolares (3 a 12 años)
+        if (val < 50 || val > 130) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
+        if (val < 65 || val > 115) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
+        return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
+      }
+      // Adolescentes y Adultos (>12 años)
       if (val < 48 || val > 120) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
       if (val < 60 || val > 100) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
       return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
     }
+    
     if (vital === 'oxygenSaturation') {
       if (val < 90) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
       if (val < 95) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
       return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
     }
+    
     if (vital === 'temperature') {
+      if (age <= 2) { // Niños pequeños y lactantes toleran temperaturas de juego ligeramente variables
+        if (val < 35.5 || val >= 38.3) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
+        if (val < 36.0 || val > 37.8) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
+        return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
+      }
       if (val < 35.5 || val >= 38.0) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
-      if (val < 36.1 || val > 37.2) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
+      if (val < 36.1 || val > 37.5) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
       return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
     }
+    
     if (vital === 'respiratoryRate') {
+      if (age <= 2) { // Lactantes y niños de hasta 2 años: norma 24-40 rpm según AAP / PALS
+        if (val < 20 || val > 45) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
+        if (val < 24 || val > 40) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
+        return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
+      }
+      if (age <= 12) { // Niños mayores: norma 18-30 rpm
+        if (val < 14 || val > 35) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
+        if (val < 18 || val > 30) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
+        return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
+      }
+      // Adultos (>12 años): norma 12-20 rpm
       if (val < 10 || val > 24) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
       if (val < 12 || val > 20) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
       return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
     }
+    
     if (vital === 'glucose') {
       if (val < 55 || val > 150) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
       if (val < 70 || val > 105) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
       return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
     }
+    
     if (vital === 'painLevel') {
       if (val >= 7) return { label: '🚨 Severo', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
       if (val >= 4) return { label: '⚠️ Moderado', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
@@ -211,6 +245,29 @@ export const PatientForm: React.FC<PatientFormProps> = ({
   };
 
   const getBPLevel = (systolic: number, diastolic: number) => {
+    const age = patientData.age || 0;
+
+    if (age <= 2) { // Lactantes y niños de hasta 2 años
+      if (systolic >= 115 || diastolic >= 75 || systolic < 65 || diastolic < 40) {
+        return { label: '🚨 Tensión Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200' };
+      }
+      if (systolic >= 100 || diastolic >= 70 || systolic < 75 || diastolic < 45) {
+        return { label: '⚠️ Tensión Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200' };
+      }
+      return { label: '✓ Tensión Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' };
+    }
+
+    if (age <= 12) { // Niños escolares (3 a 12 años)
+      if (systolic >= 125 || diastolic >= 85 || systolic < 75 || diastolic < 45) {
+        return { label: '🚨 Tensión Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200' };
+      }
+      if (systolic >= 115 || diastolic >= 80 || systolic < 85 || diastolic < 50) {
+        return { label: '⚠️ Tensión Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200' };
+      }
+      return { label: '✓ Tensión Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' };
+    }
+
+    // Adultos (>12 años)
     if (systolic >= 160 || diastolic >= 100 || systolic < 85 || diastolic < 55) {
       return { label: '🚨 Tensión Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200' };
     }

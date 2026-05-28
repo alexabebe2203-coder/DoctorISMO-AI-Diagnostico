@@ -337,17 +337,56 @@ app.post("/api/doctorismo/generate-avatar", async (req: any, res: any) => {
     const oxygen = vitals.oxygenSaturation;
     const bodyTemp = vitals.temperature;
     const glyc = vitals.glucose;
-    
+    const patientAge = age || 0;
+
     let stateLabel = "buena salud (estable)";
     let styleAtmosphere = "balanced pulsing blue and cyan neon biomechanical circuits";
-    
-    if (oxygen < 90 || pulse > 125 || pulse < 48 || glyc >= 200 || bodyTemp >= 39.0 || bodyTemp < 35.0) {
+
+    // Evaluate if critical or alert based on age-aware clinical criteria
+    let isCritical = false;
+    let isAlert = false;
+    let isExcellent = false;
+
+    if (oxygen < 90 || glyc >= 200 || bodyTemp < 35.0) {
+      isCritical = true;
+    }
+
+    if (patientAge <= 2) {
+      // Infants / Toddlers (Lactantes / Niños de hasta 2 años)
+      if (pulse < 60 || pulse > 165 || bodyTemp >= 39.3) {
+        isCritical = true;
+      } else if (oxygen < 94 || pulse < 80 || pulse > 140 || glyc >= 145 || bodyTemp >= 38.3) {
+        isAlert = true;
+      } else if (oxygen >= 97 && pulse >= 90 && pulse <= 130 && bodyTemp >= 36.3 && bodyTemp <= 37.6 && glyc >= 65 && glyc <= 100) {
+        isExcellent = true;
+      }
+    } else if (patientAge <= 12) {
+      // Children (Niños escolares 3 a 12 años)
+      if (pulse < 50 || pulse > 130 || bodyTemp >= 39.0) {
+        isCritical = true;
+      } else if (oxygen < 94 || pulse < 65 || pulse > 115 || glyc >= 140 || bodyTemp >= 38.0) {
+        isAlert = true;
+      } else if (oxygen >= 97 && pulse >= 70 && pulse <= 110 && bodyTemp >= 36.3 && bodyTemp <= 37.2 && glyc >= 70 && glyc <= 100) {
+        isExcellent = true;
+      }
+    } else {
+      // Adults (Adultos / Adolescentes > 12 años)
+      if (pulse < 48 || pulse > 125 || bodyTemp >= 39.0) {
+        isCritical = true;
+      } else if (oxygen < 94 || pulse < 60 || pulse > 100 || glyc >= 140 || bodyTemp >= 38.0) {
+        isAlert = true;
+      } else if (oxygen >= 97 && pulse >= 60 && pulse <= 80 && bodyTemp >= 36.3 && bodyTemp <= 37.0 && glyc >= 75 && glyc <= 100) {
+        isExcellent = true;
+      }
+    }
+
+    if (isCritical) {
       stateLabel = "ESTADO CRÍTICO (severe clinical warning state, urgent emergency scan)";
       styleAtmosphere = "alarmed retro pulsating red and alert intense orange biomechanical emergency circuits flashing warning lights";
-    } else if (oxygen < 94 || pulse > 100 || pulse < 60 || glyc >= 140 || bodyTemp >= 38.0) {
+    } else if (isAlert) {
       stateLabel = "ESTADO DE RIESGO / ALERTA (vulnerable patient state, dynamic clinical indicators warning)";
       styleAtmosphere = "warning amber and amber-orange glowing reactive analytical biosegment circuits";
-    } else if (oxygen >= 97 && pulse >= 60 && pulse <= 80 && bodyTemp >= 36.3 && bodyTemp <= 37.0 && glyc >= 75 && glyc <= 100) {
+    } else if (isExcellent) {
       stateLabel = "EXCELENTE SALUD (perfect homeostasis clinical state)";
       styleAtmosphere = "balanced optimal emerald-green and bright gold glowing bio-cybernetic circuits simulating absolute cellular perfection";
     }
