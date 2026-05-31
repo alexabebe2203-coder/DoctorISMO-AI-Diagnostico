@@ -190,7 +190,12 @@ export const PatientForm: React.FC<PatientFormProps> = ({
         if (val < 65 || val > 115) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
         return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
       }
-      // Adolescentes y Adultos (>12 años)
+      if (age >= 65) { // Adulto mayor (Tercera edad)
+        if (val < 45 || val > 115) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
+        if (val < 55 || val > 95) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
+        return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
+      }
+      // Adolescentes y Adultos (13 a 64 años)
       if (val < 48 || val > 120) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
       if (val < 60 || val > 100) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
       return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
@@ -198,14 +203,19 @@ export const PatientForm: React.FC<PatientFormProps> = ({
     
     if (vital === 'oxygenSaturation') {
       if (val < 90) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
-      if (val < 95) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
+      if (val < 95) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-550', barBg: 'bg-amber-500' };
       return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
     }
     
     if (vital === 'temperature') {
-      if (age <= 2) { // Niños pequeños y lactantes toleran temperaturas de juego ligeramente variables
+      if (age <= 2) { // Lactantes y niños de hasta 2 años
         if (val < 35.5 || val >= 38.3) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
         if (val < 36.0 || val > 37.8) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
+        return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
+      }
+      if (age >= 65) { // Adulto mayor (Tercera edad)
+        if (val < 35.0 || val >= 37.8) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
+        if (val < 35.8 || val > 37.2) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
         return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
       }
       if (val < 35.5 || val >= 38.0) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
@@ -214,17 +224,22 @@ export const PatientForm: React.FC<PatientFormProps> = ({
     }
     
     if (vital === 'respiratoryRate') {
-      if (age <= 2) { // Lactantes y niños de hasta 2 años: norma 24-40 rpm según AAP / PALS
+      if (age <= 2) { // Lactantes y niños de hasta 2 años
         if (val < 20 || val > 45) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
         if (val < 24 || val > 40) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
         return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
       }
-      if (age <= 12) { // Niños mayores: norma 18-30 rpm
+      if (age <= 12) { // Niños escolares (3 a 12 años)
         if (val < 14 || val > 35) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
         if (val < 18 || val > 30) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
         return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
       }
-      // Adultos (>12 años): norma 12-20 rpm
+      if (age >= 65) { // Adulto mayor (Tercera edad)
+        if (val < 10 || val > 25) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
+        if (val < 12 || val > 22) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
+        return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
+      }
+      // Adultos y adolescentes (13 a 64 años)
       if (val < 10 || val > 24) return { label: '🚨 Crítico', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500', barBg: 'bg-rose-500' };
       if (val < 12 || val > 20) return { label: '⚠️ Alerta', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500', barBg: 'bg-amber-500' };
       return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500', barBg: 'bg-emerald-500' };
@@ -267,11 +282,21 @@ export const PatientForm: React.FC<PatientFormProps> = ({
       return { label: '✓ Tensión Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' };
     }
 
-    // Adultos (>12 años)
+    if (age >= 65) { // Adulto mayor (Tercera edad)
+      if (systolic >= 160 || diastolic >= 96 || systolic < 85 || diastolic < 55) {
+        return { label: '🚨 Tensión Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200' };
+      }
+      if (systolic >= 146 || diastolic >= 86 || systolic < 95 || diastolic < 60) {
+        return { label: '⚠️ Tensión Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200' };
+      }
+      return { label: '✓ Tensión Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' };
+    }
+
+    // Adultos (13 a 64 años)
     if (systolic >= 160 || diastolic >= 100 || systolic < 85 || diastolic < 55) {
       return { label: '🚨 Tensión Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200' };
     }
-    if (systolic >= 140 || diastolic >= 90 || systolic < 95 || diastolic < 60) {
+    if (systolic >= 141 || diastolic >= 91 || systolic < 95 || diastolic < 60) {
       return { label: '⚠️ Tensión Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200' };
     }
     return { label: '✓ Tensión Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' };
@@ -802,14 +827,48 @@ export const PatientForm: React.FC<PatientFormProps> = ({
               const bplevel = getBPLevel(systolic, diastolic);
 
               const getSysColorStyle = (val: number) => {
-                if (val < 85 || val >= 160) return { label: '🚨 Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500' };
-                if (val < 95 || val >= 140) return { label: '⚠️ Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500' };
+                const age = patientData.age || 0;
+                if (age <= 2) { // BEBE: normal 75-100, alterado 101-114, critico >= 115 o < 65
+                  if (val >= 115 || val < 65) return { label: '🚨 Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500' };
+                  if (val >= 100 || val < 75) return { label: '⚠️ Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500' };
+                  return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500' };
+                }
+                if (age <= 12) { // NIÑO: normal 85-115, alterado 116-124, critico >= 125 o < 75
+                  if (val >= 125 || val < 75) return { label: '🚨 Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500' };
+                  if (val >= 115 || val < 85) return { label: '⚠️ Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500' };
+                  return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500' };
+                }
+                if (age >= 65) { // TERCERA EDAD: normal 95-145, alterado 146-159, critico >= 160 o < 85
+                  if (val >= 160 || val < 85) return { label: '🚨 Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500' };
+                  if (val >= 146 || val < 95) return { label: '⚠️ Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500' };
+                  return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500' };
+                }
+                // JOVEN-ADULTO: normal 95-140, alterado 141-159, critico >= 160 o < 85
+                if (val >= 160 || val < 85) return { label: '🚨 Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500' };
+                if (val >= 141 || val < 95) return { label: '⚠️ Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500' };
                 return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500' };
               };
 
               const getDiaColorStyle = (val: number) => {
-                if (val < 55 || val >= 100) return { label: '🚨 Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500' };
-                if (val < 60 || val >= 90) return { label: '⚠️ Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500' };
+                const age = patientData.age || 0;
+                if (age <= 2) { // BEBE: normal 45-70, alterado 71-74, critico >= 75 o < 40
+                  if (val >= 75 || val < 40) return { label: '🚨 Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500' };
+                  if (val >= 70 || val < 45) return { label: '⚠️ Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500' };
+                  return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500' };
+                }
+                if (age <= 12) { // NIÑO: normal 50-80, alterado 81-84, critico >= 85 o < 45
+                  if (val >= 85 || val < 45) return { label: '🚨 Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500' };
+                  if (val >= 80 || val < 50) return { label: '⚠️ Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500' };
+                  return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500' };
+                }
+                if (age >= 65) { // TERCERA EDAD: normal 60-85, alterado 86-95, critico >= 96 o < 55
+                  if (val >= 96 || val < 55) return { label: '🚨 Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500' };
+                  if (val >= 86 || val < 60) return { label: '⚠️ Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500' };
+                  return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500' };
+                }
+                // JOVEN-ADULTO: normal 60-90, alterado 91-99, critico >= 100 o < 55
+                if (val >= 100 || val < 55) return { label: '🚨 Crítica', color: 'text-rose-700 bg-rose-50 border-rose-200', accent: 'accent-rose-500' };
+                if (val >= 91 || val < 60) return { label: '⚠️ Alterada', color: 'text-amber-700 bg-amber-50 border-amber-200', accent: 'accent-amber-500' };
                 return { label: '✓ Estable', color: 'text-emerald-700 bg-emerald-50 border-emerald-200', accent: 'accent-emerald-500' };
               };
 

@@ -74,16 +74,56 @@ export const HologramStand: React.FC<HologramStandProps> = ({
     ? parseFloat((patientData.weight / Math.pow(patientData.height / 100, 2)).toFixed(1))
     : 22.5;
 
+  const age = patientData.age || 0;
+  const hrNorm = age <= 2 ? '80-140' : age <= 12 ? '65-115' : age >= 65 ? '55-95' : '60-100';
+  const rrNorm = age <= 2 ? '24-40' : age <= 12 ? '18-30' : age >= 65 ? '12-22' : '12-20';
+  const tempNorm = age <= 2 ? '36.0-37.8' : age >= 65 ? '35.8-37.2' : '36.1-37.5';
+  const bpNorm = age <= 2 ? '75/45 - 100/70' : age <= 12 ? '85/50 - 115/80' : age >= 65 ? '95/60 - 145/85' : '95/60 - 140/90';
+
   // Dynamic 3-tier classification helper for exact matching (excellent/normal to critical)
   const getVitalStatus = (vital: string, val: number) => {
+    const age = patientData.age || 0;
+
     if (vital === 'hr') {
+      if (age <= 2) { // Lactantes y niños de hasta 2 años
+        if (val < 60 || val > 165) return { label: 'FC CRÍTICA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
+        if (val < 80 || val > 140) return { label: 'FC ALTERADA', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
+        return { label: 'SINUSAL ESTABLE', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
+      }
+      if (age <= 12) { // Niños escolares (3 a 12 años)
+        if (val < 50 || val > 130) return { label: 'FC CRÍTICA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
+        if (val < 65 || val > 115) return { label: 'FC ALTERADA', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
+        return { label: 'SINUSAL ESTABLE', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
+      }
+      if (age >= 65) { // Adulto mayor (Tercera edad)
+        if (val < 45 || val > 115) return { label: 'FC CRÍTICA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
+        if (val < 55 || val > 95) return { label: 'FC ALTERADA', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
+        return { label: 'SINUSAL ESTABLE', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
+      }
+      // Adultos y adolescentes (13 a 64 años)
       if (val < 48 || val > 120) return { label: 'FC CRÍTICA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
       if (val < 60 || val > 100) return { label: 'FC ALTERADA', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
       return { label: 'SINUSAL ESTABLE', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
     }
     if (vital === 'bp') {
+      if (age <= 2) { // Lactantes y niños de hasta 2 años
+        if (sys >= 115 || dia >= 75 || sys < 65 || dia < 40) return { label: 'TENSION CRÍTICA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
+        if (sys >= 100 || dia >= 70 || sys < 75 || dia < 45) return { label: 'TENSION ALTERADA', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
+        return { label: 'TENSION NORMAL', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
+      }
+      if (age <= 12) { // Niños escolares (3 a 12 años)
+        if (sys >= 125 || dia >= 85 || sys < 75 || dia < 45) return { label: 'TENSION CRÍTICA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
+        if (sys >= 115 || dia >= 80 || sys < 85 || dia < 50) return { label: 'TENSION ALTERADA', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
+        return { label: 'TENSION NORMAL', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
+      }
+      if (age >= 65) { // Adulto mayor (Tercera edad)
+        if (sys >= 160 || dia >= 96 || sys < 85 || dia < 55) return { label: 'TENSION CRÍTICA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
+        if (sys >= 146 || dia >= 86 || sys < 95 || dia < 60) return { label: 'TENSION ALTERADA', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
+        return { label: 'TENSION NORMAL', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
+      }
+      // Adultos y adolescentes (13 a 64 años)
       if (sys >= 160 || dia >= 100 || sys < 85 || dia < 55) return { label: 'TENSION CRÍTICA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
-      if (sys >= 140 || dia >= 90 || sys < 95 || dia < 60) return { label: 'TENSION ALTERADA', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
+      if (sys >= 141 || dia >= 91 || sys < 95 || dia < 60) return { label: 'TENSION ALTERADA', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
       return { label: 'TENSION NORMAL', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
     }
     if (vital === 'o2') {
@@ -92,13 +132,40 @@ export const HologramStand: React.FC<HologramStandProps> = ({
       return { label: 'SAT EXCELENTE', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
     }
     if (vital === 'rr') {
+      if (age <= 2) { // Lactantes y niños de hasta 2 años
+        if (val < 20 || val > 45) return { label: 'TAQUIPNEA CRÍTICA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
+        if (val < 24 || val > 40) return { label: 'TAQUIPNEA SEÑAL', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
+        return { label: 'FREC. VENT. NORMAL', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
+      }
+      if (age <= 12) { // Niños escolares (3 a 12 años)
+        if (val < 14 || val > 35) return { label: 'TAQUIPNEA CRÍTICA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
+        if (val < 18 || val > 30) return { label: 'TAQUIPNEA SEÑAL', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
+        return { label: 'FREC. VENT. NORMAL', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
+      }
+      if (age >= 65) { // Adulto mayor (Tercera edad)
+        if (val < 10 || val > 25) return { label: 'TAQUIPNEA CRÍTICA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
+        if (val < 12 || val > 22) return { label: 'TAQUIPNEA SEÑAL', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
+        return { label: 'FREC. VENT. NORMAL', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
+      }
+      // Adultos y adolescentes (13 a 64 años)
       if (val < 10 || val > 24) return { label: 'TAQUIPNEA CRÍTICA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
       if (val < 12 || val > 20) return { label: 'TAQUIPNEA SEÑAL', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
       return { label: 'FREC. VENT. NORMAL', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
     }
     if (vital === 'temp') {
+      if (age <= 2) { // Lactantes y niños de hasta 2 años
+        if (val < 35.5 || val >= 38.3) return { label: 'TEMPERATURA ALTA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
+        if (val < 36.0 || val > 37.8) return { label: 'TEMPERATURA LEVE', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
+        return { label: 'EUTERMIA NORMAL', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
+      }
+      if (age >= 65) { // Adulto mayor (Tercera edad)
+        if (val < 35.0 || val >= 37.8) return { label: 'TEMPERATURA ALTA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
+        if (val < 35.8 || val > 37.2) return { label: 'TEMPERATURA LEVE', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
+        return { label: 'EUTERMIA NORMAL', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
+      }
+      // Adultos y adolescentes (13 a 64 años)
       if (val < 35.5 || val >= 38.0) return { label: 'TEMPERATURA ALTA', isCrit: true, isAlert: false, barBg: 'bg-rose-500', text: 'text-rose-450' };
-      if (val < 36.1 || val > 37.2) return { label: 'TEMPERATURA LEVE', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
+      if (val < 36.1 || val > 37.5) return { label: 'TEMPERATURA LEVE', isCrit: false, isAlert: true, barBg: 'bg-amber-550', text: 'text-amber-450' };
       return { label: 'EUTERMIA NORMAL', isCrit: false, isAlert: false, barBg: 'bg-emerald-500', text: 'text-emerald-400' };
     }
     if (vital === 'gluc') {
@@ -119,26 +186,40 @@ export const HologramStand: React.FC<HologramStandProps> = ({
     let criticals = [];
     let warnings = [];
 
-    if (o2 < 90) criticals.push("SatO2 Severa");
-    else if (o2 < 94) warnings.push("SatO2 Limítrofe");
+    // Evaluate SpO2 via helper to remain modular
+    const v_o2 = getVitalStatus('o2', o2);
+    if (v_o2.isCrit) criticals.push("SatO2 Severa");
+    else if (v_o2.isAlert) warnings.push("SatO2 Limítrofe");
 
-    if (hr > 120 || hr < 48) criticals.push("Ritmo Crítico");
-    else if (hr > 100 || hr < 60) warnings.push("Inestabilidad de Pulso");
+    // Evaluate heart rate via helper to remain modular
+    const v_hr = getVitalStatus('hr', hr);
+    if (v_hr.isCrit) criticals.push("Ritmo Crítico");
+    else if (v_hr.isAlert) warnings.push("Inestabilidad de Pulso");
 
-    if (sys >= 160 || sys < 85 || dia >= 100 || dia < 55) criticals.push("Crisis de Presión");
-    else if (sys >= 140 || sys < 95 || dia >= 90 || dia < 60) warnings.push("Desvío de Tensión");
+    // Evaluate blood pressure via helper to remain modular
+    const v_bp = getVitalStatus('bp', sys);
+    if (v_bp.isCrit) criticals.push("Crisis de Presión");
+    else if (v_bp.isAlert) warnings.push("Desvío de Tensión");
 
-    if (temp >= 38.0 || temp < 35.5) criticals.push("Distermia Crítica");
-    else if (temp >= 37.3 || temp < 36.1) warnings.push("Distermia Reactiva");
+    // Evaluate temperature via helper to remain modular
+    const v_temp = getVitalStatus('temp', temp);
+    if (v_temp.isCrit) criticals.push("Distermia Crítica");
+    else if (v_temp.isAlert) warnings.push("Distermia Reactiva");
 
-    if (gluc >= 150 || gluc < 55) criticals.push("Glucemia Crítica");
-    else if (gluc >= 106 || gluc < 70) warnings.push("Alteración de Glucemia");
+    // Evaluate glucose via helper to remain modular
+    const v_gluc = getVitalStatus('gluc', gluc);
+    if (v_gluc.isCrit) criticals.push("Glucemia Crítica");
+    else if (v_gluc.isAlert) warnings.push("Alteración de Glucemia");
 
-    if (rr >= 24 || rr < 10) criticals.push("Límite Ventilatorio");
-    else if (rr > 20 || rr < 12) warnings.push("Patrón Respiratorio Irregular");
+    // Evaluate respiratory rate via helper to remain modular
+    const v_rr = getVitalStatus('rr', rr);
+    if (v_rr.isCrit) criticals.push("Límite Ventilatorio");
+    else if (v_rr.isAlert) warnings.push("Patrón Respiratorio Irregular");
 
-    if (pain >= 7) criticals.push("Dolor Agudo Severo");
-    else if (pain >= 4) warnings.push("Dolor Moderado Activo");
+    // Evaluate pain via helper to remain modular
+    const v_pain = getVitalStatus('pain', pain);
+    if (v_pain.isCrit) criticals.push("Dolor Agudo Severo");
+    else if (v_pain.isAlert) warnings.push("Dolor Moderado Activo");
 
     if (criticals.length > 0) {
       return {
@@ -174,12 +255,12 @@ export const HologramStand: React.FC<HologramStandProps> = ({
 
     const isExcellent = (
       o2 >= 97 &&
-      hr >= 60 && hr <= 80 &&
-      sys >= 115 && sys <= 125 &&
-      temp >= 36.3 && temp <= 37.0 &&
-      gluc >= 75 && gluc <= 100 &&
+      !v_hr.isCrit && !v_hr.isAlert &&
+      !v_bp.isCrit && !v_bp.isAlert &&
+      !v_temp.isCrit && !v_temp.isAlert &&
+      !v_gluc.isCrit && !v_gluc.isAlert &&
       pain <= 2 &&
-      rr >= 12 && rr <= 18
+      !v_rr.isCrit && !v_rr.isAlert
     );
 
     if (isExcellent) {
@@ -349,7 +430,7 @@ export const HologramStand: React.FC<HologramStandProps> = ({
               </div>
               <div className="flex justify-between text-[8px] font-mono leading-none">
                 <span className={`${v_hr.text} font-black`}>{v_hr.label}</span>
-                <span className="text-slate-500 font-bold">Norm: 60-100</span>
+                <span className="text-slate-500 font-bold">Norm: {hrNorm}</span>
               </div>
             </div>
           </div>
@@ -373,7 +454,7 @@ export const HologramStand: React.FC<HologramStandProps> = ({
               </div>
               <div className="text-[8px] font-mono flex justify-between leading-none">
                 <span className={`${v_bp.text} font-black`}>{v_bp.label}</span>
-                <span className="text-slate-500">PAM: <strong className="text-cyan-300 font-bold">{meanArterialPressure}</strong></span>
+                <span className="text-slate-500">Norm: {bpNorm} | PAM: <strong className="text-cyan-300 font-bold">{meanArterialPressure}</strong></span>
               </div>
             </div>
           </div>
@@ -400,7 +481,7 @@ export const HologramStand: React.FC<HologramStandProps> = ({
               </div>
               <div className="flex justify-between text-[8px] font-mono leading-none">
                 <span className={`${v_rr.text} font-black`}>{v_rr.label}</span>
-                <span className="text-slate-500 font-bold">Norm: 12-20</span>
+                <span className="text-slate-500 font-bold">Norm: {rrNorm}</span>
               </div>
             </div>
           </div>
@@ -599,7 +680,7 @@ export const HologramStand: React.FC<HologramStandProps> = ({
               </div>
               <div className="text-[8px] font-mono flex justify-between leading-none">
                 <span className={`${v_temp.text} font-black`}>{v_temp.label}</span>
-                <span className="text-slate-500 font-bold">Norm: 36.1-37.2</span>
+                <span className="text-slate-500 font-bold">Norm: {tempNorm}</span>
               </div>
             </div>
           </div>
@@ -694,18 +775,29 @@ export const HologramStand: React.FC<HologramStandProps> = ({
         <div className="bg-slate-950 rounded-lg p-2.5 border border-slate-900 relative overflow-hidden h-14 flex items-center shadow-inner" id="ecg-track-viewport">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.04)_1px,transparent_1px)] bg-[size:10px_10px] pointer-events-none" />
           
-          <svg className={`w-full h-10 ${ecgWaveStyle.textColor} transition-colors duration-500 z-10`} viewBox="0 0 1000 40" preserveAspectRatio="none">
-            <path
-              d="M0 20 L80 20 L90 20 L95 10 L100 30 L105 20 L115 20 L120 2 L125 38 L130 20 L140 20 L240 20 L250 20 L255 10 L260 30 L265 20 L275 20 L280 2 L285 38 L290 20 L300 20 L400 20 L410 20 L415 10 L420 30 L425 20 L435 20 L440 2 L445 38 L450 20 L460 20 L560 20 L570 20 L575 10 L585 30 L590 20 L600 20 L605 2 L610 38 L615 20 L625 20 L725 20 L725 20 L735 20 L740 10 L745 30 L750 20 L760 20 L765 2 L770 38 L775 20 L785 20 L885 20 L895 20 L900 10 L905 30 L910 20 L920 20 L925 2 L930 38 L935 20 L945 20 L1000 20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              className="animate-ecg-sweep"
-              style={{ filter: ecgWaveStyle.glowFilter }}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <div className="relative w-full h-10 overflow-hidden flex items-center">
+            <div 
+              className="flex whitespace-nowrap animate-scroll-wave"
+              style={{ 
+                animationDuration: `${Math.max(1.2, Math.min(6.5, 180 / hr))}s`,
+                width: '1500px'
+              }}
+            >
+              {[1, 2, 3].map((i) => (
+                <svg key={i} className={`h-10 w-[500px] shrink-0 ${ecgWaveStyle.textColor} transition-colors duration-500 z-10`} viewBox="0 0 500 40" preserveAspectRatio="none">
+                  <path
+                    d="M 0 20 L 40 20 L 45 15 L 50 25 L 55 20 L 60 2 L 65 38 L 70 20 L 90 20 L 105 12 Q 115 12 125 20 L 240 20 L 245 15 L 250 25 L 255 20 L 260 2 L 265 38 L 270 20 L 290 20 L 305 12 Q 315 12 325 20 L 440 20 L 445 15 L 450 25 L 455 20 L 460 2 L 465 38 L 470 20 L 490 20 L 500 20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    style={{ filter: ecgWaveStyle.glowFilter }}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
